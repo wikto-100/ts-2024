@@ -1,0 +1,1 @@
+todo: dodaj legende na plocie koncowym, zrob dobry test statyczny, wygeneruj ploty (duzy test - duzo czasu), popraw pdfa

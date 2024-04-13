@@ -1,13 +1,15 @@
-import networkx as nx
-import numpy as np
 from math import log10
 from random import choice
+
+import networkx as nx
+import numpy as np
+
 from config import *
 
 
 def gen_graph():
     g = nx.Graph()
-    nodes = [i for i in range(1, 21)]
+    nodes = list(range(1, 21))
     edges = []
     for i in range(1, 5):
         edges.append((i, (i % 4) + 1))
@@ -37,8 +39,8 @@ def mod_topo(G: nx.Graph, avg_flow: float):
         if not G.has_edge(u, v) and not u == v:
             # Add the edge if it doesn't exist
             G.add_edge(u, v)
-            G[u][v]['a'] = avg_flow
-            G[u][v]['c'] = cap5x_b(avg_flow)
+            G[u][v]["a"] = avg_flow
+            G[u][v]["c"] = cap5x_b(avg_flow)
             break
     return
 
@@ -57,26 +59,26 @@ def cap5x_b(val):
     # Ograniczenie górne na sumaryczny rozmiar pakietów przechodzący przez łącze
     # w 1s. Stanowi 5-krotność sufitu rzędu 10 s. r. pakietów
     pow_10 = 10 ** int(log10(val))
-    return np.uint64(((pow_10 * (val // pow_10)) + pow_10)) * np.uint64(5 * MAX_PCK_SIZE)
+    return np.uint64(((pow_10 * (val // pow_10)) + pow_10)) * np.uint64(
+        5 * MAX_PCK_SIZE
+    )
 
 
 def set_caps(G: nx.Graph):
-    flows = nx.get_edge_attributes(G, 'a')
+    flows = nx.get_edge_attributes(G, "a")
     if flows:
         caps = {key: cap5x_b(val) for key, val in flows.items()}
-        nx.set_edge_attributes(G, caps, 'c')
-    return
+        nx.set_edge_attributes(G, caps, "c")
 
 
 def incr_caps(G: nx.Graph):
-    new_caps = nx.get_edge_attributes(G, 'c')
+    new_caps = nx.get_edge_attributes(G, "c")
     new_caps = {key: 1000 + val for key, val in new_caps.items()}
-    nx.set_edge_attributes(G, new_caps, 'c')
-    return
+    nx.set_edge_attributes(G, new_caps, "c")
 
 
 def reset_flows(G: nx.Graph):
-    nx.set_edge_attributes(G, 0, 'a')
+    nx.set_edge_attributes(G, 0, "a")
 
 
 def set_flows(G: nx.Graph, N: np.array):
@@ -89,18 +91,17 @@ def set_flows(G: nx.Graph, N: np.array):
                     # print("Propagacja {:d} --> {:d}: {}".format(i, j, path))
                     for _ in range(len(path) - 1):
                         u, v = path[_], path[_ + 1]
-                        G[u][v]['a'] += N[i - 1][j - 1]
-    return
+                        G[u][v]["a"] += N[i - 1][j - 1]
 
 
 def get_avg_flow(G: nx.Graph):
-    attr = nx.get_edge_attributes(G, 'a')
+    attr = nx.get_edge_attributes(G, "a")
     s = np.int64(sum([np.int64(attr[e]) for e in G.edges]))
     return s / G.number_of_edges()
 
 
 def get_avg_cap(G: nx.Graph):
-    attr = nx.get_edge_attributes(G, 'c')
+    attr = nx.get_edge_attributes(G, "c")
     s = np.int64(sum([np.int64(attr[e]) for e in G.edges]))
     return s / G.number_of_edges()
 
@@ -110,8 +111,8 @@ def T(G: nx.Graph, N: np.array):
     t: np.float64 = np.float64(0)
     m = AVG_PCK_SIZE
     for e in G.edges:
-        a_e = G[e[0]][e[1]]['a']
-        c_e = G[e[0]][e[1]]['c']
+        a_e = G[e[0]][e[1]]["a"]
+        c_e = G[e[0]][e[1]]["c"]
         div = (c_e / m) - a_e
         if div != 0:
             t += a_e / div
