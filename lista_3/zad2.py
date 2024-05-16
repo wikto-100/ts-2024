@@ -136,3 +136,4 @@ W_LEN = 100
 stations = [Station(W_LEN, 0, 32),Station(W_LEN,50,16), Station(W_LEN, 98, 32)]
 wire = Wire(W_LEN, stations)
 wire.simulate_traveling_bytes(fps=60)
+sys.stdout.write(f"COLLISIONS: {stations[0].attempt}")
