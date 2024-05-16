@@ -128,6 +128,8 @@ class Wire:
 
             time.sleep(1 / fps)
             current_time += 1 / fps
+            if all(station.block for station in self.stations):
+                return
 
         self.update_cable(old_positions, [None] * len(old_positions))
 
@@ -136,4 +138,6 @@ W_LEN = 100
 stations = [Station(W_LEN, 0, 32),Station(W_LEN,50,16), Station(W_LEN, 98, 32)]
 wire = Wire(W_LEN, stations)
 wire.simulate_traveling_bytes(fps=60)
-sys.stdout.write(f"COLLISIONS: {stations[0].attempt}")
+sys.stdout.write(f"COLLISIONS: {stations[0].attempt}\t")
+blocked = sum(1 for station in stations if station.block)
+sys.stdout.write(f"STATIONS BLOCKED: {blocked}")
